@@ -1,0 +1,303 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="LoadingSpinning" size="large"></lightning-spinner>
+    </template> 
+    <lightning-messages></lightning-messages>
+    <lightning-card class="mainContent">
+        <!-- form search hoc sinh -->
+        <lightning-layout class="slds-grid slds-grid_align-center slds-m-top_large slds-m-bottom_large">
+            <lightning-layout-item class="slds-col slds-size_4-of-12 slds-m-right_medium">
+                <lightning-input type="text" class="slds-m-bottom_small txtNameStudent" label="Tên"></lightning-input>
+                <select class="slds-select sloIdClass" onchange={searchHocSinhAction}>
+                    <option value="">---Chọn Lớp---</option>
+                    <template for:each={lop.data} for:item="l">
+                        <option key={l.id} value={l.Id}>{l.TenLop__c}</option>
+                    </template>
+                </select> 
+                <lightning-layout class="slds-grid slds-var-m-top_small">
+                    <lightning-layout-item class="slds-col slds-size_5-of-12">
+                        <lightning-input type="date" 
+                                         class="slds-m-bottom_small dtDateStart" 
+                                         label="Ngày sinh từ"  
+                                         format="MM/dd/yyyy" 
+                                         onchange={searchHocSinhAction}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-col slds-size_2-of-12">
+                        <div class="moment"><span>~</span></div>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-col slds-size_5-of-12">
+                        <lightning-input type="date" 
+                                         class="slds-m-bottom_small dtDateEnd" 
+                                         label="Đến"  
+                                         format="MM/dd/yyyy" 
+                                         onchange={searchHocSinhAction}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+                <div class="btnControl slds-var-m-top_medium">
+                    <lightning-button label="Tìm Kiếm" title="Non-info action" onclick={searchHocSinhAction}></lightning-button>
+                    <lightning-button label="Thêm Mới" title="Non-primary action"  class="slds-m-left_x-small" onclick={openModalInsert}></lightning-button>
+                    <lightning-button label="Xóa" title="Non-primary action"  class="slds-m-left_x-small" onclick={deleteHocSinhByCheckboxAction}></lightning-button>
+                </div>
+                
+            </lightning-layout-item>
+
+            <lightning-layout-item class="slds-col slds-size_1-of-12 slds-m-right_medium">
+                <lightning-input type="checkbox" class="checkSortByName chbSortByName"  label="Sắp xếp tên" onchange={searchHocSinhAction}></lightning-input>
+            </lightning-layout-item>
+        </lightning-layout>
+        <hr>
+
+        <!-- table load data -->
+        <template if:true={displayTableLoadData}>
+            <lightning-layout class="slds-grid dataTableStudent">
+                <lightning-layout-item class="slds-col slds-size_12-of-12">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered tableLoadDataStudent"
+                           aria-label="Example table of Opportunities with vertical borders">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col">
+                                    <div class="slds-truncate">
+                                       <lightning-input type="checkbox" class="checkAllHocSinh" onchange={checkAllAction}></lightning-input>
+                                    </div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Họ</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Tên</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Ngày Sinh</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Giới Tính</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Tên Lớp</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Điểm 1</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Điểm 2</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Điểm 3</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Điểm TB</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Tình Trạng</div>
+                                </th>
+                                <th class="textCenter" scope="col">
+                                    <div class="slds-truncate">Thao Tác</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={lstHocSinh} for:item="hs">
+                                <tr class="slds-hint-parent" key={hs.Id}>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-input type="checkbox" class="cbHocSinhItem" onchange={checkItemAction}></lightning-input>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{hs.HoHocSinh__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <span title={hs.Id} class="nameStudent" onclick={detailHocSinhAction}>{hs.TenHocSinh__c}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate"> {hs.NgaySinh__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <template if:true = {hs.GioiTinh__c}>
+                                                Nam
+                                            </template>
+                                            <template if:false = {hs.GioiTinh__c}>
+                                                Nữ
+                                            </template>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{hs.Lop__r.TenLop__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate textCenter">{hs.Diem1__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate textCenter">{hs.Diem2__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate textCenter">{hs.Diem3__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate textCenter">{hs.DiemTB__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            {hs.TinhTrang__c}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-icon class="iconBtn" icon-name="utility:record_update" size="x-small" title={hs.Id} onclick={updateHocSinhAction}></lightning-icon>
+                                            <lightning-icon class="iconBtn btnDeleteHocSinh" icon-name="utility:record_delete" size="x-small" title={hs.Id} onclick={deleteHocSinhAction}></lightning-icon>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+        <hr>
+    </lightning-card>
+
+    <!-- modal insert student -->
+    <template if:true={displayModalInsert}>
+        <section role="dialog" 
+                 tabindex="-1" 
+                 aria-labelledby="modal-heading-01" 
+                 aria-modal="true"
+                 aria-describedby="modal-content-id-1" 
+                 class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close">
+                        <lightning-icon icon-name="utility:close" 
+                                        size="xx-large" 
+                                        onclick={exitsModalInsert}>
+                        </lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Thêm mới học sinh</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-grid slds-grid_align-center">
+                        <div class="slds-col slds-size_8-of-12">
+                            <lightning-record-edit-form object-api-name={objectHocSinhApi} onsuccess={handleHocSinhCreated}>
+                                <lightning-input-field field-name={objHocSinh.HoHocSinh__c} required="true"></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.TenHocSinh__c} required="true"></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.NgaySinh__c} required="true"></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.GioiTinh__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Lop__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Diem1__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Diem2__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Diem3__c}></lightning-input-field>
+                                <lightning-button type="submit" variant="brand" label="Create"></lightning-button>
+                            </lightning-record-edit-form>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer slds-grid slds-grid_align-center">
+                    <lightning-button label="Cancel" 
+                                      title="Non-info action" 
+                                      class="slds-var-m-right_medium" 
+                                      onclick={exitsModalInsert}>
+                    </lightning-button>
+                    <!-- <lightning-button label="Thêm Mới" title="Non-info action"></lightning-button> -->
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    
+     <!-- modal update student -->
+     <template if:true={displayModalUpdate}>
+        <section role="dialog" 
+                 tabindex="-1" 
+                 aria-labelledby="modal-heading-01" 
+                 aria-modal="true"
+                 aria-describedby="modal-content-id-1" 
+                 class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close">
+                        <lightning-icon icon-name="utility:close" size="xx-large" onclick={exitsModalUpdate}></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-02" class="slds-modal__title slds-hyphenate">Cập nhật học sinh</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                    <div class="slds-grid slds-grid_align-center">
+                        <div class="slds-col slds-size_8-of-12">
+                            <lightning-record-edit-form object-api-name={objectHocSinhApi} onsuccess={handleHocSinhUpdate} record-id={idHocSinh}>
+                                <lightning-input-field field-name="HoHocSinh__c" required="true"></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.TenHocSinh__c} required="true"></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.NgaySinh__c} required="true"></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.GioiTinh__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Lop__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Diem1__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Diem2__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Diem3__c}></lightning-input-field>
+                                <lightning-button type="submit" variant="brand" label="Update"></lightning-button>
+                            </lightning-record-edit-form>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer slds-grid slds-grid_align-center">
+                    <lightning-button label="Cancel" title="Non-info action" class="slds-var-m-right_medium" onclick={exitsModalUpdate}></lightning-button>
+                    <!-- <lightning-button label="Thêm Mới" title="Non-info action"></lightning-button> -->
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+     <!-- modal detail student -->
+     <template if:true={displayModalDetail}>
+        <section role="dialog" tabindex="-1" 
+                 aria-labelledby="modal-heading-01" 
+                 aria-modal="true"
+                 aria-describedby="modal-content-id-1" 
+                 class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close">
+                        <lightning-icon icon-name="utility:close" size="xx-large" onclick={exitsModalDetail}></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-03" class="slds-modal__title slds-hyphenate">Chi tiết học sinh</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+                    <div class="slds-grid slds-grid_align-center">
+                        <div class="slds-col slds-size_8-of-12">
+                            <lightning-record-edit-form object-api-name={objectHocSinhApi} onsuccess={handleHocSinhUpdate} record-id={idHocSinh}>
+                                <lightning-input-field field-name="HoHocSinh__c" required="true"></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.TenHocSinh__c} required="true"></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.NgaySinh__c} required="true"></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.GioiTinh__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Lop__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Diem1__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Diem2__c}></lightning-input-field>
+                                <lightning-input-field field-name={objHocSinh.Diem3__c}></lightning-input-field>
+                                <lightning-button type="submit" variant="brand" label="Update"></lightning-button>
+                            </lightning-record-edit-form>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer slds-grid slds-grid_align-center">
+                    <lightning-button class="slds-var-m-right_medium"
+                                      label="Delete" 
+                                      title="Non-info action" 
+                                      onclick={deleteHocSinhWhenViewDetail}>
+                    </lightning-button>
+                    <lightning-button label="Cancel" title="Non-info action" onclick={exitsModalDetail}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

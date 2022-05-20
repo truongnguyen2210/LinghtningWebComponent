@@ -1,0 +1,38 @@
+.moment{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 25px;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.iconBtn{
+    cursor: pointer;
+    margin: 0 4px;
+}
+
+.checkSortByName{
+    margin-top: 20px;
+}
+
+.mainContent{
+    overflow: hidden;
+}
+
+.dataTableStudent{
+    overflow: auto;
+}
+
+.nameStudent{
+    cursor: pointer;
+    color: rgb(38, 42, 241);
+}
+.studentFall{
+    background-color: rgba(245, 73, 73, 0.493);
+}
+
+/* base */
+.textCenter{
+    text-align: center;
+}
