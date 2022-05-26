@@ -6,7 +6,7 @@ public class LeadProcessor implements Database.Batchable<sObject>, Database.Stat
     }
 
     public void execute(Database.BatchableContext db, List<Lead> lstLead) {
-        for(Lead item: lstLead) {
+        for (Lead item: lstLead) {
             item.LeadSource = 'Dreamforce';
         }
         update lstLead;
