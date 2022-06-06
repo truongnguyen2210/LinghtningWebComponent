@@ -1,0 +1,18 @@
+<aura:component controller="CampingListController">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+	  <aura:attribute name="item" type="Camping_Item__c" required='true' />
+     <aura:attribute name="isDisabled" type="Boolean" default='false' />
+   	  <p>{!v.item.Name}</p>
+     <p>{!v.item.Price__c}</p>
+     <p>{!v.item.Quantity__c}</p>
+    <p>{!v.item.Packed__c}</p>
+    <lightning:formattedNumber value="{!v.item.Price__c}" style="currency"/>
+    <lightning:formattedNumber value="{!v.item.Quantity__c}" style="number"/>
+    <lightning:input type="toggle"
+                 name="toggle"
+                 aura:id="inputCheckbox"
+                 disabled="{!v.isDisabled}"
+                 checked="{!v.item.Packed__c}"/>
+     <lightning:button label="Packed!"
+            onclick="{!c.packItem }"/>
+</aura:component>

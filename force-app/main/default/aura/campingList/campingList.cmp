@@ -1,0 +1,41 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" controller="CampingListController">
+      <aura:attribute name="items" type="Camping_Item__c[]"/>
+      <aura:attribute name="newItem" type="Camping_Item__c"
+         default="{'sobjectType': 'Camping_Item__c','Quantity__c': 0,'Price__c': 0}"/>
+      <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+     <form class="slds-form_stacked">
+            <lightning:input label="Camping Name"
+                             aura:id="campingForm"
+                             value="{!v.newItem.Name}"
+                             required="true"/>
+            <lightning:input type="number" label="Quantity"
+                             aura:id="campingForm"
+                             min="1"
+                             value="{!v.newItem.Quantity__c}"/>
+          <lightning:input type="number" label="Price"
+                           aura:id="campingForm"
+                           value="{!v.newItem.Price__c}"
+                           formatter="currency"
+                           messageWhenRangeUnderflow="Enter an amount that's at least .01."/>/>
+         	   <lightning:input type="checkbox" aura:id="campingForm" label="Packed?"  
+                         name="Packed"
+                         checked="{!v.newItem.Packed__c}"/>
+            <lightning:button label="Create Camping"
+                              class="slds-m-top_medium"
+                              variant="brand"
+                              onclick="{!c.clickCreateItem }"/>
+        </form>
+                            
+	<ol>
+        <li>Bug Spray</li>
+        <li>Bear Repellant</li>
+        <li>Goat Food</li>
+    </ol>
+    <lightning:card title="Expenses">
+        <p class="slds-p-horizontal_small">
+            <aura:iteration items="{!v.items}" var="item">
+                <c:campingListItem item="{!item}"/>
+            </aura:iteration>
+        </p>
+    </lightning:card>
+</aura:component>
